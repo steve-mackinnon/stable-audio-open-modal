@@ -1,0 +1,15 @@
+name: stable-audio-open-modal
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - conda-forge::libsndfile
+  - pip
+  - pip:
+    - torch
+    - torchaudio
+    - sndfile
+    - stable-audio-tools
+    - fastapi[standard]
+    - pydantic
+    - modal
