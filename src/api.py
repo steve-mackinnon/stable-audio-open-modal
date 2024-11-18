@@ -1,7 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 import modal
-import torch
 from generate_audio_sample import generate_audio_sample
 from pydantic import BaseModel
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
