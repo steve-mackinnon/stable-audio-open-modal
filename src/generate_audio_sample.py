@@ -7,6 +7,8 @@ from math import floor
 import argparse
 import io
 
+from transient_detector import detect_transient_onsets
+
 OUTPUT_LENGTH_SECONDS = 0.7
 
 
@@ -48,6 +50,13 @@ def generate_audio_sample(
 
     # Peak normalize, clip, convert to int16, and save to file
     output = output.to(torch.float32).div(torch.max(torch.abs(output))).clamp(-1, 1)
+    transients = detect_transient_onsets(output, sample_rate)
+    # The stable audio open model will sometimes generate multiple drum hits despite requesting a single hit
+    # in the prompt. Below we use a basic transient detector to trim extra hits. It's not perfect, but generally
+    # works pretty well.
+    if len(transients) > 1:
+        print(f"Trimming extra drum hits at {transients[1]}")
+        output = output[:, : transients[1]]
     output = trim_trailing_silence(output, sample_rate).mul(32767).to(torch.int16).cpu()
 
     byte_io = io.BytesIO()
@@ -74,9 +83,7 @@ def trim_trailing_silence(audio: torch.Tensor, sr: int):
             silent_samples = 0
             found_onset = True
     if silence_after_index is None:
-        print("No silence found after first sample")
         return audio
-    print(f"Trimmed audio to {silence_after_index} samples")
     return audio[:, :silence_after_index]
 
 
@@ -90,7 +97,6 @@ if __name__ == "__main__":
 
     # Download model
     model, model_config = get_pretrained_model("stabilityai/stable-audio-open-1.0")
-    print("got model")
 
     for i in range(args.num_samples):
         bytes = generate_audio_sample(
