@@ -1,3 +1,9 @@
+# Stable Audio Open Modal
+
+This repo includes python code for running inference with the [Stable Audio Open 1.0](https://huggingface.co/stabilityai/stable-audio-open-1.0) model. This can be run locally or on [Modal](https://modal.com).
+
+`generate_audio_sample.py` tweaks the provided prompt to attempt to generate a single "oneshot" sample like a drum hit. It then applies some post processing to the model output to trim extra hits and fade out the audio smoothly.
+
 ## Environment setup
 
 1. Install miniconda: https://docs.conda.io/en/latest/miniconda.html
