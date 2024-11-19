@@ -6,6 +6,7 @@ from stable_audio_tools.inference.generation import generate_diffusion_cond
 from math import floor
 import argparse
 import io
+import numpy as np
 
 from transient_detector import detect_transient_onsets
 
@@ -57,7 +58,9 @@ def generate_audio_sample(
     if len(transients) > 1:
         print(f"Trimming extra drum hits at {transients[1]}")
         output = output[:, : transients[1]]
-    output = trim_trailing_silence(output, sample_rate).mul(32767).to(torch.int16).cpu()
+
+    output = trim_trailing_silence(output, sample_rate)
+    output = apply_fade_out(output, sample_rate).mul(32767).to(torch.int16).cpu()
 
     byte_io = io.BytesIO()
     torchaudio.save(byte_io, output, sample_rate, format="wav")
@@ -85,6 +88,13 @@ def trim_trailing_silence(audio: torch.Tensor, sr: int):
     if silence_after_index is None:
         return audio
     return audio[:, :silence_after_index]
+
+
+def apply_fade_out(audio: torch.Tensor, sr: int, fade_out_ms: int = 10):
+    fade_out_samples = int(fade_out_ms / 1000 * sr)
+    fade_out_curve = torch.logspace(np.log10(1), np.log10(0.000001), fade_out_samples)
+    audio[:, -fade_out_samples:] *= fade_out_curve
+    return audio
 
 
 if __name__ == "__main__":
