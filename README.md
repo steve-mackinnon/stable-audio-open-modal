@@ -4,7 +4,25 @@ This repo includes python code for running inference with the [Stable Audio Open
 
 `generate_audio_sample.py` tweaks the provided prompt to attempt to generate a single "oneshot" sample like a drum hit. It then applies some post processing to the model output to trim extra hits and fade out the audio smoothly.
 
-## Environment setup
+## Huggingface setup
+
+In order to access the Stable Audio Open model, you'll need to:
+1. Create a [Huggingface account](https://huggingface.co/)
+2. Navigate to the [Stable Audio Open 1.0](https://huggingface.co/stabilityai/stable-audio-open-1.0) model page and opt-in to gain access to the model
+3. Create a [Huggingface access token](https://huggingface.co/settings/tokens/new?tokenType=read) with read access
+4. Copy the token and add it to your local env using the name HF_TOKEN:
+
+For zsh, add this to your `~/.zshrc`:
+```bash
+export HF_TOKEN=myhftoken 
+```
+
+For fish, add this to your fish config (e.g. `~/.config/fish/config.fish`):
+```bash
+set -Ux HF_TOKEN myhftoken
+```
+
+## Local environment setup
 
 1. Install miniconda: https://docs.conda.io/en/latest/miniconda.html
 2. Setup the conda environment
@@ -13,7 +31,7 @@ This repo includes python code for running inference with the [Stable Audio Open
    conda env create -f environment.yml
    ```
 
-3. Activate the environment
+3. Activate it 
 
    ```bash
    conda activate stable-audio-open-modal

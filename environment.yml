@@ -1,14 +1,15 @@
 name: stable-audio-open-modal
 channels:
-  - conda-forge
+  - defaults
+  - roebel
 dependencies:
-  - python=3.11
-  - conda-forge::libsndfile
+  - python=3.10
   - pip
+  - pysndfile
   - pip:
     - torch
     - torchaudio
-    - sndfile
+    - pysndfile
     - stable-audio-tools
     - fastapi[standard]
     - pydantic
