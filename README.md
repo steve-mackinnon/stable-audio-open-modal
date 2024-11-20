@@ -51,7 +51,7 @@ This will generate a file called `output_0.wav` in the current directory.
 
 You can optionally provide the following arguments:
 
-- `--steps`: Number of inference steps (default: 50)
+- `--steps`: Number of inference steps (default: 100)
 - `--cfg_scale`: Classifier-free guidance scale (default: 7.0; recommended range 7 - 13)
 - `--num_samples`: Number of audio samples to generate (default: 1)
 
