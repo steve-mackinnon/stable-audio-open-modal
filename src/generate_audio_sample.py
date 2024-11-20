@@ -14,7 +14,7 @@ OUTPUT_LENGTH_SECONDS = 0.7
 
 
 def generate_audio_sample(
-    *, model: any, prompt: str, steps: int = 50, cfg_scale: int = 7
+    *, model: any, prompt: str, steps: int, cfg_scale: int
 ):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print("using device", device)
@@ -100,7 +100,7 @@ def apply_fade_out(audio: torch.Tensor, sr: int, fade_out_ms: int = 10):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--prompt", type=str, required=True)
-    parser.add_argument("--steps", type=int, required=False, default=50)
+    parser.add_argument("--steps", type=int, required=False, default=100)
     parser.add_argument("--cfg_scale", type=int, required=False, default=7)
     parser.add_argument("--num_samples", type=int, required=False, default=1)
     args = parser.parse_args()
