@@ -1,15 +1,15 @@
 # Stable Audio Open Modal
 
-This repo includes python code for running inference with the [Stable Audio Open 1.0](https://huggingface.co/stabilityai/stable-audio-open-1.0) model. This can be run locally or on [Modal](https://modal.com).
+This repo includes python code for running inference with the [Stable Audio Open 1.0](https://huggingface.co/stabilityai/stable-audio-open-1.0) model. This can be run locally or hosted on [Modal](https://modal.com).
 
 `generate_audio_sample.py` tweaks the provided prompt to attempt to generate a single "oneshot" sample like a drum hit. It then applies some post processing to the model output to trim extra hits and fade out the audio smoothly.
 
-## Huggingface setup
+## Hugging Face setup
 
 In order to access the Stable Audio Open model, you'll need to:
-1. Create a [Huggingface account](https://huggingface.co/)
+1. Create a [Hugging Face account](https://huggingface.co/)
 2. Navigate to the [Stable Audio Open 1.0](https://huggingface.co/stabilityai/stable-audio-open-1.0) model page and opt-in to gain access to the model
-3. Create a [Huggingface access token](https://huggingface.co/settings/tokens/new?tokenType=read) with read access
+3. Create a [Hugging Face access token](https://huggingface.co/settings/tokens/new?tokenType=read) with read access
 4. Copy the token and add it to your local env using the name HF_TOKEN:
 
 For zsh, add this to your `~/.zshrc`:
@@ -60,10 +60,10 @@ You can optionally provide the following arguments:
 To deploy the app to run inference on [Modal](https://modal.com), you'll need to:
 
 1. Create a Modal account
-2. Create a Huggingface account and API token.
+2. Create a Hugging Face account and API token.
 3. Sign the agreement to use the [Stable Audio Open 1.0](https://huggingface.co/stabilityai/stable-audio-open-1.0) model.
 4. Setup secrets for the Modal app with the following environment variables:
-   - `HF_TOKEN`: Your Huggingface API token
+   - `HF_TOKEN`: Your Hugging Face API token
    - `AUTH_TOKEN`: A Bearer auth token you create to authenticate requests to the Modal app
 5. Deploy the app with the following command:
 
