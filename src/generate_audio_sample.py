@@ -13,9 +13,7 @@ from transient_detector import detect_transient_onsets
 OUTPUT_LENGTH_SECONDS = 0.7
 
 
-def generate_audio_sample(
-    *, model: any, prompt: str, steps: int, cfg_scale: int
-):
+def generate_audio_sample(*, model: any, prompt: str, steps: int, cfg_scale: int):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print("using device", device)
     sample_rate = 44100
@@ -70,7 +68,7 @@ def generate_audio_sample(
 
 
 def trim_trailing_silence(audio: torch.Tensor, sr: int):
-    SILENCE_THRESHOLD = 0.005
+    SILENCE_THRESHOLD = 0.01
     silent_samples = 0
     found_onset = False
     silence_after_index = None
@@ -103,6 +101,7 @@ if __name__ == "__main__":
     parser.add_argument("--steps", type=int, required=False, default=100)
     parser.add_argument("--cfg_scale", type=int, required=False, default=7)
     parser.add_argument("--num_samples", type=int, required=False, default=1)
+    parser.add_argument("--output_prefix", type=str, required=False, default="output")
     args = parser.parse_args()
 
     # Download model
@@ -112,5 +111,5 @@ if __name__ == "__main__":
         bytes = generate_audio_sample(
             model=model, prompt=args.prompt, steps=args.steps, cfg_scale=args.cfg_scale
         )
-        with open(f"output_{i}.wav", "wb") as f:
+        with open(f"{args.output_prefix}_{i}.wav", "wb") as f:
             f.write(bytes.getvalue())
