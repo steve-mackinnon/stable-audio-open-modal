@@ -2,7 +2,7 @@ import numpy as np
 import torch
 
 MIN_SEPARATION_MS = 300
-ENERGY_THRESHOLD = 0.3
+ENERGY_THRESHOLD = 0.4
 
 
 def detect_transient_onsets(audio: torch.Tensor, sr: int):
