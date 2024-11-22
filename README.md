@@ -52,11 +52,11 @@ python generate_audio.py --prompt "Massive metalic techno kick drum"
 
 This will generate a file called `output_0.wav` in the current directory.
 
-You can optionally provide the following arguments:
+To see a list of available arguments to customize inference, run:
 
-- `--steps`: Number of inference steps (default: 100)
-- `--cfg_scale`: Classifier-free guidance scale (default: 7.0; recommended range 7 - 13)
-- `--num_samples`: Number of audio samples to generate (default: 1)
+```bash
+python generate_audio.py -h"
+```
 
 ## Running on Modal
 
