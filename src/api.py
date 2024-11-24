@@ -65,8 +65,10 @@ class Model:
 
 class GenerateSampleRequest(BaseModel):
     prompt: str
-    cfg_scale: int | None = None
-    steps: int | None = None
+    cfg_scale: int = 10
+    steps: int = 50
+    trim_extra_hits: bool = True
+    length: float = 0.7
 
 
 @app.function(
@@ -95,10 +97,6 @@ def generate_sample(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    cfg_scale = body.cfg_scale or 10
-    steps = body.steps or 50
-    prompt = body.prompt
-
     print("loading model")
     model_load_start = time.time()
     with open(f"{MODEL_DIR}/model_config.json") as f:
@@ -110,11 +108,16 @@ def generate_sample(
     print(f"model loaded in {model_load_end - model_load_start} seconds")
 
     print(
-        f"generating audio sample with prompt: {prompt} cfg_scale: {cfg_scale} steps: {steps}"
+        f"generating audio sample with prompt: {body.prompt} cfg_scale: {body.cfg_scale} steps: {body.steps}"
     )
     audio_gen_start = time.time()
     audio_bytes = generate_audio_sample(
-        model=model, prompt=prompt, cfg_scale=cfg_scale, steps=steps
+        model=model,
+        prompt=body.prompt,
+        cfg_scale=body.cfg_scale or 10,
+        steps=body.steps or 50,
+        length=body.length or 0.7,
+        trim_extra_hits=body.trim_extra_hits or True,
     )
     audio_gen_end = time.time()
     print(f"audio generated in {audio_gen_end - audio_gen_start} seconds")
