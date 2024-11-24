@@ -6,7 +6,7 @@ ENERGY_THRESHOLD = 0.4
 
 
 def detect_transient_onsets(audio: torch.Tensor, sr: int):
-    mono = audio.mean(dim=0).numpy()
+    mono = audio.mean(dim=0).cpu().numpy()
     frame_size = int(sr * 0.01)  # 10ms frame
     energy = np.array(
         [

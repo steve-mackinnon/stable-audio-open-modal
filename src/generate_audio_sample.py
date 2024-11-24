@@ -96,7 +96,9 @@ def trim_trailing_silence(audio: torch.Tensor, sr: int):
 
 def apply_fade_out(audio: torch.Tensor, sr: int, fade_out_ms: int = 10):
     fade_out_samples = int(fade_out_ms / 1000 * sr)
-    fade_out_curve = torch.logspace(np.log10(1), np.log10(0.000001), fade_out_samples)
+    fade_out_curve = torch.logspace(
+        np.log10(1), np.log10(0.000001), fade_out_samples, device=audio.device
+    )
     audio[:, -fade_out_samples:] *= fade_out_curve
     return audio
 
