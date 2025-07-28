@@ -20,6 +20,8 @@ image = (
         "sndfile==0.2.0",
     )
     .shell(["pip install -U flash-attn --no-build-isolation"])
+    .add_local_file("src/generate_audio_sample.py", "/root/generate_audio_sample.py")
+    .add_local_file("src/transient_detector.py", "/root/transient_detector.py")
 )
 
 app = modal.App("sample-gen")
@@ -31,6 +33,35 @@ MODEL_CONFIG_NAME = "model_config.json"
 MODEL_CKPT_NAME = "model.safetensors"
 
 
+@app.function(
+    image=image,
+    secrets=[modal.Secret.from_name("huggingface-secret")],
+    volumes={"/models": volume},
+)
+def download_model():
+    """Download the model to the volume. Run this before deploying."""
+    from huggingface_hub import hf_hub_download
+
+    repo_id = "stabilityai/stable-audio-open-1.0"
+    os.makedirs(MODEL_DIR, exist_ok=True)
+    token = os.environ["HF_TOKEN"]
+    hf_hub_download(
+        repo_id,
+        filename=MODEL_CONFIG_NAME,
+        repo_type="model",
+        local_dir=MODEL_DIR,
+        token=token,
+    )
+    hf_hub_download(
+        repo_id,
+        filename=MODEL_CKPT_NAME,
+        repo_type="model",
+        token=token,
+        local_dir=MODEL_DIR,
+    )
+    volume.commit()
+
+
 @app.cls(
     gpu="any",
     image=image,
@@ -38,29 +69,7 @@ MODEL_CKPT_NAME = "model.safetensors"
     volumes={"/models": volume},
 )
 class Model:
-    # runs at image build time to download the model and save it to a persistent volume
-    @modal.build()
-    def download_model_to_folder(self):
-        from huggingface_hub import hf_hub_download
-
-        repo_id = "stabilityai/stable-audio-open-1.0"
-        os.makedirs(MODEL_DIR, exist_ok=True)
-        token = (os.environ["HF_TOKEN"],)
-        hf_hub_download(
-            repo_id,
-            filename=MODEL_CONFIG_NAME,
-            repo_type="model",
-            local_dir=MODEL_DIR,
-            token=token,
-        )
-        hf_hub_download(
-            repo_id,
-            filename=MODEL_CKPT_NAME,
-            repo_type="model",
-            token=token,
-            local_dir=MODEL_DIR,
-        )
-        volume.commit()
+    pass
 
 
 class GenerateSampleRequest(BaseModel):
@@ -79,7 +88,7 @@ class GenerateSampleRequest(BaseModel):
     ],
     volumes={"/models": volume},
 )
-@modal.web_endpoint(method="POST")
+@modal.fastapi_endpoint(method="POST")
 def generate_sample(
     body: GenerateSampleRequest,
     token: HTTPAuthorizationCredentials = Depends(auth_scheme),
@@ -127,7 +136,7 @@ def generate_sample(
 @app.local_entrypoint()
 def main():
     token = HTTPAuthorizationCredentials(
-        scheme="Bearer", credentials=os.environ("STABLE_AUDIO_MODAL_TOKEN")
+        scheme="Bearer", credentials=os.environ["STABLE_AUDIO_MODAL_TOKEN"]
     )
     generate_sample.remote(
         GenerateSampleRequest(prompt="Beefy hip hop kick", cfg_scale=10, steps=50),
